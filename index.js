@@ -2,9 +2,10 @@ const express = require('express')
 const axios = require('axios')
 const tunnelSsh = require('tunnel-ssh')
 
-
 module.exports = async ({ tunnels = [], routes = [], port = 1337 }) => {
     try {
+        console.log(`api-tunnel :: open ${tunnels.length} tunnels..`)
+
         tunnels = tunnels.map(tunnel => {
             tunnel.keepAlive = true
             return tunnel
@@ -19,32 +20,34 @@ module.exports = async ({ tunnels = [], routes = [], port = 1337 }) => {
 
         const app = express()
 
+        console.log(`api-tunnel :: create routes..`)
         app.use((req, res, next) => {
             res.header('Access-Control-Allow-Origin', '*')
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
             next()
         })
 
-        app.all('*', async (req, res) => {
-            console.log(req.method, req.url)
-
+        app.get('*', async (req, res) => {
             const selectedRoute = routes.find(route => route.regex.test(req.url))
             if (!selectedRoute) {
-                console.log('404 for', req.url)
+                console.log('404 for', req.method, req.url)
                 res.status(404).send('Not found')
                 return
             }
 
             const url = selectedRoute.transformUrl(req.url)
+            console.log(`api-tunnel :: proxy ${req.url} -> ${url}`)
 
             const data = await axios({
-                method,
+                method: req.method,
                 url
             })
             res.send(data.data)
         })
 
-        return await new Promise((resolve, reject) => app.listen(port, (err, server) => {}))
+        await new Promise((resolve, reject) => app.listen(port, err => err ? reject(err) : resolve()))
+
+        console.log(`api-tunnel :: started on port ${port}`)
 
     } catch (e) {
         console.log('api-tunnel :: Initialization failed')

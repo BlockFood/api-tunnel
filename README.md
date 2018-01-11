@@ -28,12 +28,13 @@ const configuration = {
     ],
     routes: [
         {
-            regex: /^match\.this/,
-            transformUrl: url => `actual/path/${url}`
+            regex: /^match\.this/, // if the regex matches the url, then this route will be selected
+            transformUrl: url => `actual/path/${url}` // transforms the url into the target url
         }
     ],
     port: 1337
 }
+
 try {
     await apiTunnel(configuration)
 } catch(e) {
