@@ -45,7 +45,7 @@ module.exports = async ({ tunnels = [], routes = [], port = 1337 }) => {
                 })
                 res.send(data.data)
             } catch(e) {
-                res.status(e.status).send(e.body)
+                res.status(e.response.status).send(e.response.data)
             }
         })
 
