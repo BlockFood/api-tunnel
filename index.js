@@ -38,11 +38,15 @@ module.exports = async ({ tunnels = [], routes = [], port = 1337 }) => {
             const url = selectedRoute.transformUrl(req.url)
             console.log(`api-tunnel :: proxy ${req.url} -> ${url}`)
 
-            const data = await axios({
-                method: req.method,
-                url
-            })
-            res.send(data.data)
+            try {
+                const data = await axios({
+                    method: req.method,
+                    url
+                })
+                res.send(data.data)
+            } catch(e) {
+                res.status(e.status).send(e.body)
+            }
         })
 
         await new Promise((resolve, reject) => app.listen(port, err => err ? reject(err) : resolve()))
