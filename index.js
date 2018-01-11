@@ -48,7 +48,7 @@ module.exports = async ({ tunnels = [], routes = [], port = 1337 }) => {
         await new Promise((resolve, reject) => app.listen(port, err => err ? reject(err) : resolve()))
 
         console.log(`api-tunnel :: started on port ${port}`)
-
+        return app
     } catch (e) {
         console.log('api-tunnel :: Initialization failed')
         console.log('api-tunnel :: Initialization failed :: config = ', config)

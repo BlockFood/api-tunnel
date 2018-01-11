@@ -36,7 +36,7 @@ const configuration = {
 }
 
 try {
-    await apiTunnel(configuration)
+    const app = await apiTunnel(configuration)
 } catch(e) {
     console.log('Failed to setup tunnels & routes', e)
 }
